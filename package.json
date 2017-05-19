@@ -1,0 +1,59 @@
+{
+  "name": "react-native-geofence-monitor",
+  "version": "0.0.1",
+  "description": "Component for to monitor when the device enter in geographical fence",
+  "keywords": [
+    "android",
+    "ios",
+    "react-component",
+    "react-native",
+    "geofence",
+    "geo-fence"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brimes/react-native-geofence-monitor.git"
+  },
+  "author": {
+    "name": "Fidelize TI"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": ">=0.40.0"
+  },
+  "gitHead": "e8eba0ea9e3315bd7be579607070a872de3d1122",
+  "bugs": {
+    "url": "https://github.com/brimes/react-native-geofence-monitor/issues"
+  },
+  "homepage": "https://github.com/brimes/react-native-geofence-monitor#readme",
+  "_id": "react-native-geofence-monitor@0.0.1",
+  "_shasum": "97712d8df111a117651f7766dfe6d5f13a2ebd59",
+  "_from": "react-native-geofence-monitor@latest",
+  "_npmVersion": "4.2.0",
+  "_nodeVersion": "7.9.0",
+  "_npmUser": {
+    "name": "brimes",
+    "email": "brunodelima@gmail.com"
+  },
+  "dist": {
+    "shasum": "97712d8df111a117651f7766dfe6d5f13a2ebd59",
+    "tarball": "https://registry.npmjs.org/react-native-geofence-monitor/-/react-native-geofence-monitor-0.0.1.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "Bruno Lima",
+      "email": "brunodelima@gmail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/react-native-geofence-monitor-0.0.1.tgz_1493842388365_0.8865406026598066"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/react-native-geofence-monitor/-/react-native-geofence-monitor-0.0.1.tgz",
+  "readme": "ERROR: No README data found!"
+}
