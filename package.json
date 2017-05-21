@@ -1,6 +1,6 @@
 {
   "name": "react-native-geofence-monitor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Component for to monitor when the device enter in geographical fence",
   "keywords": [
     "android",
@@ -25,7 +25,7 @@
   "peerDependencies": {
     "react-native": ">=0.40.0"
   },
-  "gitHead": "e8eba0ea9e3315bd7be579607070a872de3d1122",
+  "gitHead": "1f80a2d4b5882443470b0347a2096dfe7f9844ff",
   "bugs": {
     "url": "https://github.com/brimes/react-native-geofence-monitor/issues"
   },
