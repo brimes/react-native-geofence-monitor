@@ -30,7 +30,7 @@ public class GeofenceMonitorModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void addLocation(String key, Double latitude, Double longitude) {
-        geofencesList.add(new Geofence.Builder()
+        Geofence newLocation = new Geofence.Builder()
         .setRequestId(key)
 
         .setCircularRegion(
@@ -41,7 +41,9 @@ public class GeofenceMonitorModule extends ReactContextBaseJavaModule {
         .setExpirationDuration(1000 * 60 * 60 * 12)
         .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
             Geofence.GEOFENCE_TRANSITION_EXIT)
-        .build());
+        .build();
+
+        this.geofencesList.add(newLocation);
     }
 
     private GeofencingRequest getGeofencingRequest() {
