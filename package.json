@@ -30,9 +30,9 @@
     "url": "https://github.com/brimes/react-native-geofence-monitor/issues"
   },
   "homepage": "https://github.com/brimes/react-native-geofence-monitor#readme",
-  "_id": "react-native-geofence-monitor@0.0.1",
-  "_shasum": "244266495e4af1c79519381147f858536a859aea",
-  "_from": "react-native-geofence-monitor@latest",
+  "_id": "react-native-geofence-monitor@0.0.3",
+  "_shasum": "b2dbf658bbcfcff748876d323dcd2ccac11f56b4",
+  "_from": "react-native-geofence-monitor@0.0.3",
   "_npmVersion": "3.10.10",
   "_nodeVersion": "6.10.3",
   "_npmUser": {
@@ -40,19 +40,19 @@
     "email": "brunodelima@gmail.com"
   },
   "dist": {
-    "shasum": "244266495e4af1c79519381147f858536a859aea",
-    "tarball": "https://registry.npmjs.org/react-native-geofence-monitor/-/react-native-geofence-monitor-0.0.1.tgz"
+    "shasum": "b2dbf658bbcfcff748876d323dcd2ccac11f56b4",
+    "tarball": "https://registry.npmjs.org/react-native-geofence-monitor/-/react-native-geofence-monitor-0.0.3.tgz"
   },
   "maintainers": [
     {
-      "name": "Bruno Lima",
+      "name": "brimes",
       "email": "brunodelima@gmail.com"
     }
   ],
   "_npmOperationalInternal": {
-    "host": "packages-18-east.internal.npmjs.com",
-    "tmp": "tmp/react-native-geofence-monitor-0.0.1.tgz_1495159547131_0.7354819835163653"
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/react-native-geofence-monitor-0.0.3.tgz_1495411392516_0.10258814762346447"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/react-native-geofence-monitor/-/react-native-geofence-monitor-0.0.1.tgz"
+  "_resolved": "https://registry.npmjs.org/react-native-geofence-monitor/-/react-native-geofence-monitor-0.0.3.tgz"
 }

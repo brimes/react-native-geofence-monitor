@@ -1,7 +1,7 @@
 package com.fidelize.geofence;
 
 import android.os.Handler;
-import java.util.List;
+import java.util.ArrayList;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -15,12 +15,12 @@ import com.google.android.gms.location.GeofencingRequest;
 public class GeofenceMonitorModule extends ReactContextBaseJavaModule {
 
     private Handler handler;
-    private List<Geofence> geofencesList;
+    private ArrayList<Geofence> geofencesList;
     private ReactContext reactContext;
 
     public GeofenceMonitorModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        this.reactContext = reactContext;
+        geofencesList = new ArrayList<Geofence>();
     }
 
     @Override
@@ -30,7 +30,16 @@ public class GeofenceMonitorModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void addLocation(String key, Double latitude, Double longitude) {
-        Geofence newLocation = new Geofence.Builder()
+        geofencesList.add(getGeofenceBuild(key, latitude, longitude));
+    }
+
+    @ReactMethod
+    public void removeAllLocations() {
+        //geofencesList.add(getGeofenceBuild(key, latitude, longitude));
+    }
+
+    private Geofence getGeofenceBuild(String key, Double latitude, Double longitude) {
+        Geofence location = new Geofence.Builder()
         .setRequestId(key)
 
         .setCircularRegion(
@@ -43,7 +52,7 @@ public class GeofenceMonitorModule extends ReactContextBaseJavaModule {
             Geofence.GEOFENCE_TRANSITION_EXIT)
         .build();
 
-        this.geofencesList.add(newLocation);
+        return location;
     }
 
     private GeofencingRequest getGeofencingRequest() {
