@@ -28,21 +28,20 @@ import java.util.List;
 public class GeofenceTransitionsIntentService extends IntentService {
 
     protected static final String TAG = "ReactNativeJS";
+    private Context context;
+    private Intent intent;
 
     /**
      * This constructor is required, and calls the super IntentService(String)
      * constructor with the name for a worker thread.
      */
     public GeofenceTransitionsIntentService() {
-        // Use the TAG to name the worker thread.
         super(TAG);
-        Log.e(TAG, "Contructor");
     }
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "Intent Create");
-
+        context = getApplicationContext();
         super.onCreate();
     }
 
@@ -53,6 +52,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
+        this.intent = intent;
+
         Log.e(TAG, "Handle Event - Geofence");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
@@ -111,46 +112,32 @@ public class GeofenceTransitionsIntentService extends IntentService {
         return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
     }
 
+    private PendingIntent getContentIntent() {
+        Intent intent = new Intent(context, AppLauncherService.class);
+        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+    }
+
     /**
      * Posts a notification in the notification bar when a transition is detected.
      * If the user clicks the notification, control goes to the MainActivity.
      */
     private void sendNotification(String notificationDetails) {
-        // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(getApplicationContext(), GeofenceMonitorModule.class);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
 
-        // Construct a task stack.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-        // Add the main Activity to the task stack as the parent.
-        stackBuilder.addParentStack(GeofenceMonitorModule.class);
-
-        // Push the content Intent onto the stack.
-        stackBuilder.addNextIntent(notificationIntent);
-
-        // Get a PendingIntent containing the entire back stack.
-        PendingIntent notificationPendingIntent =
-                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Get a notification builder that's compatible with platform versions >= 4
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-
-        // Define the notification settings.
-        builder.setColor(Color.RED)
+        notificationBuilder
             .setContentTitle(notificationDetails)
-            .setContentText("Teste Notification")
-            .setContentIntent(notificationPendingIntent);
+            .setContentText("Toque para abrir o app")
+            .setSmallIcon(context.getResources().getIdentifier("ic_launcher", "mipmap", context.getPackageName()))
+            .setAutoCancel(true)
+            .setContentIntent(getContentIntent());     
 
-        // Dismiss notification once the user touches it.
-        builder.setAutoCancel(true);
+        getSysNotificationManager().notify(0, notificationBuilder.build());
 
-        // Get an instance of the Notification manager
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Issue the notification
-        mNotificationManager.notify(0, builder.build());
     }
+
+    private NotificationManager getSysNotificationManager() {
+         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    }    
 
     /**
      * Maps geofence transition types to their human-readable equivalents.

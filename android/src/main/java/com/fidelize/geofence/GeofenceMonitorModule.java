@@ -13,10 +13,12 @@ import android.content.Context;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -69,69 +71,82 @@ public class GeofenceMonitorModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void addLocation(String key, Double latitude, Double longitude) {
+    public void location(ReadableMap parametersMap) {
+        LocationParameters params = new LocationParameters(parametersMap);
+
+        if (!params.isValid()) {
+            Log.i(TAG, "Missing params");
+            return ;
+        }
+
+//        String  key       = parametersMap.getString("key");
+//        String  latitude  = parametersMap.getString("latitude");
+//        String  longitude = parametersMap.getString("longitude");
+//        String  radius    = parametersMap.getString("radius");
+//        String  type      = parametersMap.getString("type");
+//        String  title     = parametersMap.getString("title");
+//        String  text      = parametersMap.getString("text");
+//        Boolean openApp   = parametersMap.getBoolean("openApp");
+//        Boolean vibration = parametersMap.getBoolean("vibration");
+//        Boolean expireTime = parametersMap.getBoolean("vibration");
+
+        String type = params.getString("double", "enterAndExit");
+        Integer transitionType = Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT; 
+        if (type == "enter") {
+            transitionType = Geofence.GEOFENCE_TRANSITION_ENTER;
+        }
+        if (type == "exit") {
+            transitionType = Geofence.GEOFENCE_TRANSITION_EXIT;
+        }
+        if (type == "dwell") {
+            transitionType = Geofence.GEOFENCE_TRANSITION_DWELL;
+        }
+
         geofencesList.add(new Geofence.Builder()
-                    // Set the request ID of the geofence. This is a string to identify this
-                    // geofence.
-                    .setRequestId(key)
-
-                    // Set the circular region of this geofence.
-                    .setCircularRegion(
-                            latitude,
-                            longitude,
-                            1000000
-                    )
-
-                    // Set the expiration duration of the geofence. This geofence gets automatically
-                    // removed after this period of time.
-                    .setExpirationDuration(120000)
-
-                    // Set the transition types of interest. Alerts are only generated for these
-                    // transition. We track entry and exit transitions in this sample.
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                            Geofence.GEOFENCE_TRANSITION_EXIT)
-
-                    // Create the geofence.
-                    .build());
-    }
-
-    @ReactMethod
-    public void notification() {
+            .setRequestId(params.getString("key", null))
+            .setCircularRegion(
+                params.getDouble("latitude", null),
+                params.getDouble("longitude", null),
+                params.getInt("radius", 100)
+            )
+            .setExpirationDuration(params.getInt("expireTime", 120000))
+            .setTransitionTypes(transitionType)
+            .build());
     }
 
     @ReactMethod
     public String start() {
         if (!mGoogleApiClient.isConnected()) {
-            Log.i(TAG, "Not Connected");
             return "Not Connected";
         }
 
         try {
-            Log.i(TAG, "Start OK");
+            removeGeofences();
             LocationServices.GeofencingApi.addGeofences(
                 mGoogleApiClient,
-                // The GeofenceRequest object.
                 getGeofencingRequest(),
-                // A pending intent that that is reused when calling removeGeofences(). This
-                // pending intent is used to generate an intent when a matched geofence
-                // transition is observed.
                 getGeofencePendingIntent()
-            ).setResultCallback(this); // Result processed in onResult().
+            ).setResultCallback(this);
         } catch (SecurityException securityException) {
-            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
             Log.i(TAG, "Error verify Android Manifest");
         }
-
         return "OK";
+    }
+
+    protected void removeGeofences() {
+        LocationServices.GeofencingApi.removeGeofences(
+            mGoogleApiClient,
+            getGeofencePendingIntent()
+        ).setResultCallback(this);
 
     }
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(reactContext)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+            .addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this)
+            .addApi(LocationServices.API)
+            .build();
     }    
 
     /**
@@ -162,14 +177,11 @@ public class GeofenceMonitorModule extends ReactContextBaseJavaModule implements
      * @return A PendingIntent for the IntentService that handles geofence transitions.
      */
     private PendingIntent getGeofencePendingIntent() {
-        // Reuse the PendingIntent if we already have it.
         if (mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
 
         Intent intent = new Intent(reactContext, GeofenceTransitionsIntentService.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-        // addGeofences() and removeGeofences().
         return PendingIntent.getService(reactContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -188,46 +200,4 @@ public class GeofenceMonitorModule extends ReactContextBaseJavaModule implements
         builder.addGeofences(geofencesList);
         return builder.build();
     }
-
-    /**
-     * Posts a notification in the notification bar when a transition is detected.
-     * If the user clicks the notification, control goes to the MainActivity.
-     */
-    private void sendNotification(String notificationDetails) {
-        // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(reactContext, GeofenceMonitorModule.class);
-
-        // Construct a task stack.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(reactContext);
-
-        // Add the main Activity to the task stack as the parent.
-        //stackBuilder.addParentStack(GeofenceMonitorModule.class);
-
-        // Push the content Intent onto the stack.
-        stackBuilder.addNextIntent(notificationIntent);
-
-        // Get a PendingIntent containing the entire back stack.
-        PendingIntent notificationPendingIntent =
-                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Get a notification builder that's compatible with platform versions >= 4
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(reactContext);
-
-        // Define the notification settings.
-        builder.setColor(Color.RED)
-            .setContentTitle(notificationDetails)
-            .setContentText("Teste Notification")
-            .setContentIntent(notificationPendingIntent);
-
-        // Dismiss notification once the user touches it.
-        builder.setAutoCancel(true);
-
-        // Get an instance of the Notification manager
-        NotificationManager mNotificationManager =
-                (NotificationManager) reactContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Issue the notification
-        mNotificationManager.notify(0, builder.build());
-    }
-
 }
